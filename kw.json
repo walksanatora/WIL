@@ -1,0 +1,15 @@
+[
+	"CALL",
+	"CALLN",
+	"STR",
+	"VAR",
+	"IF",
+	"OP",
+	"DEF",
+	"EOF",
+	"ES",
+	"LBL",
+	"GOTO",
+	"ADD",
+	"IMPORT"
+]

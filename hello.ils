@@ -1,0 +1,13 @@
+IF OP 0 VAR std.init
+	IMPORT STR std
+ES
+CALL STR print STR "Hello World!"
+
+DEF STR p STR str times
+	LBL STR lp
+	CALLN print VAR str
+	IF OP 
+ES
+CALL STR p STR "Hello World!"
+EOF
+
