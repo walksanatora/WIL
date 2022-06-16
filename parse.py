@@ -8,4 +8,5 @@ def parse(string) -> list[str]:
 	for line in string.split('\n'):
 		for word in shlex.split(line):
 			output.append(word)
+		output.append('\n')
 	return output

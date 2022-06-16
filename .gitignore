@@ -1,5 +1,13 @@
+#python paths
 /__pycache__
-/tree.grv
-/tree.grv.pdf
-/tree.grv.png
 /venv
+
+#graphviz generated files
+/tree*
+/retree
+/retree.*
+
+#Huffman Encoded ILS
+/hello.heils
+#generated binary huffman tree
+/hello.tree

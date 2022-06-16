@@ -1,5 +1,6 @@
 from __future__ import annotations
 from bitarray import bitarray
+import bitarray.util as bau
 import json
 import math
 
@@ -36,48 +37,67 @@ class Node:
 	def IsLeafNode(self) -> bool:
 		return self.LeftChild != None
 
-class BitIO:
-	bits: bitarray
-	def __init__(self,bits:bitarray|None):
-		if bits: self.bits = self.bits #either pre-set bits
-		else: self.bits = bitarray() #or create a empty bin array
+class BitIO(bitarray):
+	def __init__(self,bits:bitarray|None=None):
+		super(BitIO,self).__init__()
 
 	def writeBit(self,bit: int|bool):
-		if bit: self.bits.append(1)
-		else: self.bits.append(0)
+		if bit: self.append(1)
+		else: self.append(0)
 	
-	def writeHex(self,data:str):
-		bits = f'{data:b}' # convert to binary string
+	def writeBin(self,bits:str):
 		for bit in bits:
-			self.writeBit(int(bit)) #write bits to bitarray
-	
+			self.writeBit(int(bit))
+
+	def writeHex(self,data:str):
+		self.writeNumber(int(data,16))
+
 	def writeNumber(self,number):
-		outputHex = ""
+		print('writing number',number)
 		mod = math.floor(number / 255) #calculate how many times it goes into 255(FF)
 		add = number - (255*mod) # calculate the remaining 
-		for _ in range(mod): #insert FF bytes to hex string
-			outputHex += f'{255:0>2x}'
-		outputHex += f'{add:0>2x}' #insert extra hex overflow
-		self.writeHex(outputHex) #write hex to binarray
+		c = 0
+		for _ in range(mod):
+			print(f'{c}/{mod}')
+			c+=1
+			self += bau.hex2ba('ff')
+		tmpbin = f'{add:x}'
+		while len(tmpbin)%2 != 0:
+			tmpbin = '0' + tmpbin
+		print(bau.hex2ba(tmpbin))
+		self += bau.hex2ba(tmpbin)
+		
 
 	def writeString(self,string):
 		self.writeNumber(len(string)) #write length of string
-		self.writeHex(''.join([f"{ord(char):2>x}" for char in string]))#write the string
+		for char in string:
+			chb=f'{ord(char):x}'
+			while len(chb)%2 != 0:
+				chb = '0' + chb
+			self += bau.hex2ba(chb)
 
 	def readBit(self)->int:
-		return self.bits.pop(0)
+		b = self.pop(0)
+		print('pop bit',b,'\n',self)
+		return b
 
 	def readHex(self)->str:
-		if len(self.bits) < 8:
-			raise IndexError(f"insufficent bits to form a byte {len(self.bits)}/8")
-		else: return f'{int("".join(str(self.bits.pop(0)) for _ in range(8)),2):2>x}'
+		if len(self) < 8:
+			raise IndexError(f"insufficent bits to form a byte {len(self)}/8")
+		else: 
+			bits = "".join(str(self.pop(0)) for _ in range(8))
+			print(bits)
+			number = int(bits,2)
+			return f'{number:2>x}'
 	
 	def readNumber(self)->int:
 		accu = ""
 		while True:
 			hex = self.readHex()
 			accu += hex
+			print('hex:',hex)
 			if hex != 'ff':
+				print('break')
 				break
 		return int(accu,16)
 
@@ -85,7 +105,8 @@ class BitIO:
 		length = self.readNumber()
 		string = ''
 		for _ in range(length):
-			string += chr(int(self.readHex,16))
+			string += chr(int(self.readHex(),16))
+		print('decoded',string)
 		return string
 
 #region custom helpers
@@ -94,35 +115,35 @@ def encodeValue(value:str|int,bio:BitIO):
 		bio.writeBit(1)
 		bio.writeNumber(IMPORTANT_KEYS.index(value))
 	else:
+		if type(value) != str: raise TypeError(f"value must be either str not {type(value)}")
 		bio.writeBit(0)
-		if type(value) == str:
-			bio.writeBit(0)
-		elif type(value) == int:
-			bio.writeBit(1)
-		else: raise TypeError(f"value must be either str or int not {type(value)}")
+		bio.writeString(value)
 		
-def decodeValue(bio:BitIO) -> str|int:
+def decodeValue(bio:BitIO) -> str:
 	if bio.readBit():
+		print('decoding important')
 		num = bio.readNumber()
+		print('important:',IMPORTANT_KEYS[num])
 		return IMPORTANT_KEYS[num]
 	else:
-		if bio.readBit():
-			return bio.readString()
-		else: 
-			return bio.readNumber()
+		return bio.readString()
 
 def EncodeNode(node:Node,writer:BitIO):
-	if node.IsLeafNode():
-		encodeValue(node.value)
+	if not node.IsLeafNode():
+		writer.writeBit(1)
+		encodeValue(node.value,writer)
 	else:
-		writer.WriteBit(0);
-		EncodeNode(node.LeftChild, writer);
-		EncodeNode(node.Right, writer);
+		writer.writeBit(0)
+		EncodeNode(node.LeftChild, writer)
+		EncodeNode(node.RightChild, writer)
 
 def DecodeNode(reader:BitIO)->Node:
-	if reader.ReadBit():
+	print('decode')
+	if reader.readBit():
+		print('extract values')
 		return Node(decodeValue(reader), None, None);
 	else:
+		print('going deeper')
 		leftChild: Node = DecodeNode(reader);
 		rightChild: Node = DecodeNode(reader);
 		return Node(0, leftChild, rightChild);
@@ -137,7 +158,7 @@ def GenerateCounts(val:list[str])->dict[str,int]:
 	return ({k: v for k, v in sorted(accu.items(), key=lambda item: item[1])})
 #endregion
 
-#region tutorial helpers
+#region tree
 
 def GenerateTree(counts:dict[str,int])->tuple[dict[str,str],Node]:
 	#Step 1 create nodes for every value
@@ -166,6 +187,13 @@ def GenerateTree(counts:dict[str,int])->tuple[dict[str,str],Node]:
 
 	return paths,node
 
-
+def HuffmanEncode(values:list[str],paths:dict[str,str]) -> BitIO:
+	binstr = ""
+	for v in values:
+		binstr += paths[v]
+	Bits = BitIO()
+	Bits.writeBin(binstr)
+	del binstr
+	return Bits
 
 #endregion
