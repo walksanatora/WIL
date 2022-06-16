@@ -11,3 +11,5 @@
 /hello.heils
 #generated binary huffman tree
 /hello.tree
+#recovered file after huffman decoding
+/rehello.ils

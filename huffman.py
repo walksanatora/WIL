@@ -31,6 +31,22 @@ class Node:
 			else: return rc
 		else: return ""
 
+	def resolve(self,path:str):
+		"""
+		resolves a binary path to a huffman encoded value
+		returns either the name or a empty str
+		"""
+		iln = self.IsLeafNode()
+		if len(path) == 0:
+			if iln: return ""
+			else: return self.value
+		if iln:
+			if not int(path[0]):
+				return self.LeftChild.resolve(path[1:])
+			else:
+				return self.RightChild.resolve(path[1:])
+			
+
 	def __repr__(self) -> str:
 		return f'<{self.value} w:{self.weight}>'
 
@@ -53,18 +69,13 @@ class BitIO(bitarray):
 		self.writeNumber(int(data,16))
 
 	def writeNumber(self,number):
-		print('writing number',number)
 		mod = math.floor(number / 255) #calculate how many times it goes into 255(FF)
 		add = number - (255*mod) # calculate the remaining 
-		c = 0
 		for _ in range(mod):
-			print(f'{c}/{mod}')
-			c+=1
 			self += bau.hex2ba('ff')
 		tmpbin = f'{add:x}'
 		while len(tmpbin)%2 != 0:
 			tmpbin = '0' + tmpbin
-		print(bau.hex2ba(tmpbin))
 		self += bau.hex2ba(tmpbin)
 		
 
@@ -78,7 +89,6 @@ class BitIO(bitarray):
 
 	def readBit(self)->int:
 		b = self.pop(0)
-		print('pop bit',b,'\n',self)
 		return b
 
 	def readHex(self)->str:
@@ -86,7 +96,6 @@ class BitIO(bitarray):
 			raise IndexError(f"insufficent bits to form a byte {len(self)}/8")
 		else: 
 			bits = "".join(str(self.pop(0)) for _ in range(8))
-			print(bits)
 			number = int(bits,2)
 			return f'{number:2>x}'
 	
@@ -95,9 +104,7 @@ class BitIO(bitarray):
 		while True:
 			hex = self.readHex()
 			accu += hex
-			print('hex:',hex)
 			if hex != 'ff':
-				print('break')
 				break
 		return int(accu,16)
 
@@ -106,7 +113,6 @@ class BitIO(bitarray):
 		string = ''
 		for _ in range(length):
 			string += chr(int(self.readHex(),16))
-		print('decoded',string)
 		return string
 
 #region custom helpers
@@ -121,9 +127,7 @@ def encodeValue(value:str|int,bio:BitIO):
 		
 def decodeValue(bio:BitIO) -> str:
 	if bio.readBit():
-		print('decoding important')
 		num = bio.readNumber()
-		print('important:',IMPORTANT_KEYS[num])
 		return IMPORTANT_KEYS[num]
 	else:
 		return bio.readString()
@@ -138,12 +142,9 @@ def EncodeNode(node:Node,writer:BitIO):
 		EncodeNode(node.RightChild, writer)
 
 def DecodeNode(reader:BitIO)->Node:
-	print('decode')
 	if reader.readBit():
-		print('extract values')
 		return Node(decodeValue(reader), None, None);
 	else:
-		print('going deeper')
 		leftChild: Node = DecodeNode(reader);
 		rightChild: Node = DecodeNode(reader);
 		return Node(0, leftChild, rightChild);
@@ -190,10 +191,22 @@ def GenerateTree(counts:dict[str,int])->tuple[dict[str,str],Node]:
 def HuffmanEncode(values:list[str],paths:dict[str,str]) -> BitIO:
 	binstr = ""
 	for v in values:
+		print('encoding Value',v,'\n',paths[v])
 		binstr += paths[v]
 	Bits = BitIO()
 	Bits.writeBin(binstr)
 	del binstr
 	return Bits
+
+def HuffmanDecode(bits:BitIO,tree:Node)->list[str]:
+	buf=""
+	output=[]
+	while len(bits) != 0:
+		buf += str(bits.readBit())
+		out = tree.resolve(buf)
+		if out != "":
+			output.append(out)
+			buf = ""
+	return output
 
 #endregion

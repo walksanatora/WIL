@@ -37,3 +37,7 @@ newNode = huffman.DecodeNode(binaryNode)
 dot = render.generateGraph(newNode)
 dot.render('retree',format='png').replace('\\', '/')
 
+#decode huffman encoded data
+recoveredData = huffman.HuffmanDecode(bits,newNode)
+with open('rehello.ils','w') as recov: #write recovered back to a new file
+	recov.write(parse.combine(recoveredData))
