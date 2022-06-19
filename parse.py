@@ -6,8 +6,11 @@ def parse(string) -> list[str]:
 	"""
 	output = []
 	for line in string.split('\n'):
+		flag_comment = False
 		for word in shlex.split(line):
-			output.append(word)
+			if not word.startswith('#') and not flag_comment:
+				output.append(word)
+			else: flag_comment = True
 		output.append('\n')
 	return output
 

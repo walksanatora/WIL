@@ -1,8 +1,9 @@
-IF OP 0 VAR std.init
+IF OP 0 VAR std.init #only load if std.init is unset
 	IMPORT STR std
 ES
-CALL STR print STR "Hello World!"
+CALL STR print STR "Hello World!" writes Hello World!
 
+#this is a function which takes a string to output and a number of times to output it
 DEF STR print_times STR str times
 	LBL STR lp
 	CALLN print VAR str
@@ -11,6 +12,6 @@ DEF STR print_times STR str times
 		GOTO STR lp
 	ES
 ES
-
+#print the string 10 times
 CALL STR print_times STR "Hello World!" 10
 EOF
