@@ -11,8 +11,23 @@
 - 8 - `ES` - End Statment used to close a DEF or IF block
 - 9 - `LBL` `STR label` - label of where to jump to
 - A - `GOTO` `STR label` - jumps to a label
-- B - `ADD` `VAR variable` `number` - adds
+- B - `MATH` `VAR variable` `op` `number` - performs math see 
 - C - `IMPORT` `STR name` calls the script (baisically copy/pasting it here)
+
+
+# Math Operations
+if a number is divided and is a decimal it gets rounded to the nearest whole
+if a number becomes negative it is 0
+- `0` var = var + a
+- `1` var = var - a
+- `2` var = a - var
+- `3` var = var * a
+- `4` var = var / a
+- `5` var =	a / var
+- `6` var = var%a
+- `7` var = a%var
+- `8` var = var^a
+- `9` var = a^var
 
 
 # OP codes

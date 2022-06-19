@@ -3,11 +3,14 @@ IF OP 0 VAR std.init
 ES
 CALL STR print STR "Hello World!"
 
-DEF STR p STR str times
+DEF STR print_times STR str times
 	LBL STR lp
 	CALLN print VAR str
-	IF OP 
+	MATH 1 times 1
+	IF OP 0 OP 2 times 0
+		GOTO STR lp
+	ES
 ES
-CALL STR p STR "Hello World!"
-EOF
 
+CALL STR print_times STR "Hello World!" 10
+EOF
