@@ -6,6 +6,7 @@
 	"IF",
 	"OP",
 	"DEF",
+	"CDEF",
 	"EOF",
 	"ES",
 	"LBL",
