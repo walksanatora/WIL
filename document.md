@@ -8,8 +8,8 @@
 - 05 - `OP` - see [OP codes](#op-codes) for a list of options, used for comparison
 - 06 - `DEF` - opening of a function see [Defining a Function](#defining-a-function)
 - 07 - `CDEF` - opening of a class see [Defining a Class](#defining-a-class)
-- 08 - `EOF` - End Of File used to refrence the end of the file (some padding afterwards to round to 8bits)
-- 09 - `ES` - End Statment used to close a (C)DEF,IF block, or module
+- 08 - `EOF` `return` - End Of File used to refrence the end of the file and determines the return of a module
+- 09 - `ES` - End Statment used to close a (C)DEF or IF block
 - 0A - `LBL` `STR label` - label of where to jump to
 - 0B - `GOTO` `STR label` - jumps to a label
 - 0C - `MATH` `VAR variable` `op` `number` - performs math see 
@@ -98,7 +98,7 @@ CDEF module
 		CALLN STR "return" STR "HELLO WORLD!" 
 	ES
 ES
-ES module
+EOF module
 ```
 moduel.ils
 ```
@@ -107,7 +107,7 @@ CDEF module
 		CALLN STR "return" STR "TIME TO DUEL!!!"
 	ES
 ES
-ES module
+EOF module
 ```
 
-when importing a module the final `ES` of the file will return the module
+when importing a module the `EOF` of the file will return the module
