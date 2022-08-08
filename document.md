@@ -50,10 +50,16 @@ IF OP # A B
 to allow OP codes on your classes give it a function like
 ```
 DEF op_0 CDEF class self other
-	RETURN 1
+	RETURN 1 #return a 1 for true and a 0 for false
 ES
 ```
 
+you could also implement a cast function so you dont have to write the operations
+```
+DEF cast_number CDEF class self
+	return self.number
+ES
+```
 # Defining a Function
 
 function which takes then returns a string with unused number and class args
