@@ -50,7 +50,7 @@ IF OP # A B
 to allow OP codes on your classes give it a function like
 ```
 DEF op_0 CDEF class self other
-	
+	RETURN 1
 ES
 ```
 
