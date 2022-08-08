@@ -8,12 +8,13 @@
 - 05 - `OP` - see [OP codes](#op-codes) for a list of options, used for comparison
 - 06 - `DEF` - opening of a function see [Defining a Function](#defining-a-function)
 - 07 - `CDEF` - opening of a class see [Defining a Class](#defining-a-class)
-- 08 - `EOF` `return` - End Of File used to refrence the end of the file and determines the return of a module
+- 08 - `EOF` - End Of File used to refrence the end of the file and determines
 - 09 - `ES` - End Statment used to close a (C)DEF or IF block
 - 0A - `LBL` `STR label` - label of where to jump to
 - 0B - `GOTO` `STR label` - jumps to a label
 - 0C - `MATH` `VAR variable` `op` `number` - performs math see 
-- 0D - `IMPORT` `STR name` imports the scripe see [Importing another file](#importing-another-file) for more information
+- 0D - `IMPORT` `STR name` - imports the scripe see [Importing another file](#importing-another-file) for more information
+- 0E - `RETURN` `value` - returns a value froma function/module
 
 
 # Math Operations
@@ -44,14 +45,21 @@ IF OP # A B
 - `4` A and B
 - `5` A xor B
 
-(no OR? just add two variablesA)
+(no OR? just add two variables)
+
+to allow OP codes on your classes give it a function like
+```
+DEF op_0 CDEF class self other
+	
+ES
+```
 
 # Defining a Function
 
 function which takes then returns a string with unused number and class args
 ```
 DEF function STR string number CDEF class Class #create a function named function
-	CALLN STR "return" string
+	RETURN string
 EF #close the function
 ```
 
@@ -72,7 +80,7 @@ CDEF class #create a new class called name
 	number = 123 #class has a number named number
 	CDEF class customClass #class has a name object named customClass
 
-	DEF name @name self STR string number CDEF name customClass #function to generate new class
+	DEF name @name self STR string number CDEF name customClass #function to generate new class FUNCTION MUST HAVE ATLEAST ONE ARGUMENT FOR IT'S SELF
 		self.string = string #set the string value
 		self.number = number #set the number
 		self.customClass = custom class #set the class
@@ -90,24 +98,27 @@ IMPORT STR "moduel" STR "duel" #import moduel under the name duel
 CALLN STR "print" CALL module.hello 
 CALLN STR "print" CALL duel.time
 
+EOF
 ```
 module.ils
 ```
 CDEF module
 	DEF hello
-		CALLN STR "return" STR "HELLO WORLD!" 
+		RETURN STR "HELLO WORLD!" 
 	ES
 ES
-EOF module
+RETURN module
+EOF
 ```
 moduel.ils
 ```
 CDEF module
 	DEF time
-		CALLN STR "return" STR "TIME TO DUEL!!!"
+		RETURN STR "TIME TO DUEL!!!"
 	ES
 ES
-EOF module
+RETURN module
+EOF
 ```
 
 when importing a module the `EOF` of the file will return the module
