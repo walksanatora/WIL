@@ -1,10 +1,10 @@
-IF OP 0 VAR std.init #only load if std.init is unset
-	IMPORT STR std
+IF OP 0 VAR std #only load if std is unset
+	IMPORT std
 ES
-CALL STR print STR "Hello World!" #writes Hello World!
+CALL print STR "Hello World!" #writes Hello World!
 
 #this is a function which takes a string to output and a number of times to output it
-DEF STR print_times STR str times
+DEF print_times STR str times
 	LBL STR lp
 	CALLN print VAR str
 	MATH 1 times 1

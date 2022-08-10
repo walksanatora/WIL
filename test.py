@@ -1,6 +1,6 @@
 import parse
 import huffman
-import render
+import util.render as render
 
 import json
 

@@ -35,5 +35,5 @@ def combine(data:list[str])->str:
 
 	return "\n".join(new2)
 
-def removeComments(code:str) -> str:
+def removeExtraData(code:str) -> str:
 	return combine(parse(code))
