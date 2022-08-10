@@ -28,4 +28,12 @@ def combine(data:list[str])->str:
 	for l in accu:
 		new.append(" ".join(l))
 
-	return "\n".join(new)
+	new2 = []
+	for line in new:
+		if not (line == ""):
+			new2.append(line)
+
+	return "\n".join(new2)
+
+def removeComments(code:str) -> str:
+	return combine(parse(code))

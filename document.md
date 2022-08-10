@@ -31,6 +31,10 @@ if a number becomes negative it is 0
 - `8` var = var^a
 - `9` var = a^var
 
+`a` determines the output type so
+`MATH 0 100 STR "ohno"` would return the number 104
+`MATH 0 STR "ohno" 100` would return "ohno100"
+
 
 # OP codes
 IF statments go through if the value is not `0`
@@ -56,16 +60,16 @@ ES
 
 you could also implement a cast function so you dont have to write the operations
 ```
-DEF cast_number CDEF class self
-	return self.number
+DEF cast_number CDEF self
+	return 1
 ES
 ```
 # Defining a Function
 
 function which takes then returns a string with unused number and class args
 ```
-DEF function STR string number CDEF class Class #create a function named function
-	RETURN string
+DEF function STR string number CDEF class #create a function named function
+	RETURN MATH 0 string class
 EF #close the function
 ```
 
@@ -74,6 +78,13 @@ it will use the default value which is
 "" for string
 0 for numbers
 dependant on the class
+
+passing the incorrect data type to a function will cast it if applicable
+default casting is
+string->number returns the length of the string
+number->string returns a string representation of the number
+class->string return the class name
+class->number returns the number of values/functions in the class
 
 Functions can accept *less* arguments then specified but never more
 

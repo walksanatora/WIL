@@ -1,7 +1,7 @@
 IF OP 0 VAR std.init #only load if std.init is unset
 	IMPORT STR std
 ES
-CALL STR print STR "Hello World!" writes Hello World!
+CALL STR print STR "Hello World!" #writes Hello World!
 
 #this is a function which takes a string to output and a number of times to output it
 DEF STR print_times STR str times

@@ -130,7 +130,10 @@ def decodeValue(bio:BitIO) -> str:
 		num = bio.readNumber()
 		return IMPORTANT_KEYS[num]
 	else:
-		return bio.readString()
+		s = bio.readString()
+		if " " in s:
+			s = f'"{s}"'
+		return s
 
 def EncodeNode(node:Node,writer:BitIO):
 	if not node.IsLeafNode():
