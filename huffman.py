@@ -8,7 +8,7 @@ with open('kw.json','r') as  j:
 	IMPORTANT_KEYS = json.load(j)
 
 class Node:
-	value: str|int
+	value: str|int|None
 	LeftChild: Node
 	RightChild: Node
 	weight: int
@@ -46,7 +46,6 @@ class Node:
 			else:
 				return self.RightChild.resolve(path[1:])
 			
-
 	def __repr__(self) -> str:
 		return f'<{self.value} w:{self.weight}>'
 
@@ -78,7 +77,6 @@ class BitIO(bitarray):
 			tmpbin = '0' + tmpbin
 		self += bau.hex2ba(tmpbin)
 		
-
 	def writeString(self,string):
 		self.writeNumber(len(string)) #write length of string
 		for char in string:
